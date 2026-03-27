@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Contador Ambiental Pro</title>
+    <title>Contador UTM Pro</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #2e7d32; --secondary: #1565c0; --danger: #c62828; }
-        body { font-family: sans-serif; margin: 0; padding: 15px; background: #f4f4f4; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .btn-main { width: 100%; height: 100px; font-size: 1.2rem; font-weight: bold; background: var(--primary); color: white; border: none; border-radius: 12px; }
-        .btn-util { background: #666; color: white; border: none; padding: 10px; border-radius: 5px; margin-top: 10px; width: 100%; }
+        :root { --primary: #2e7d32; --secondary: #1565c0; --danger: #c62828; --dark: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 15px; background: #f0f2f5; color: var(--dark); }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; }
+        .btn-main { width: 100%; height: 120px; font-size: 1.4rem; font-weight: bold; background: var(--primary); color: white; border: none; border-radius: 15px; transition: transform 0.1s; box-shadow: 0 6px 0 #1b5e20; }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #1b5e20; }
+        .btn-util { background: white; color: var(--dark); border: 1px solid #ddd; padding: 12px; border-radius: 10px; margin-top: 10px; width: 100%; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .status-gps { font-size: 0.8rem; color: #666; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 85%; border-radius: 10px; }
-        .grid-especies { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .btn-esp { padding: 15px 5px; font-size: 0.9rem; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9; font-weight: bold; }
+        /* Modais */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 10% auto; padding: 25px; width: 85%; border-radius: 20px; max-height: 80vh; overflow-y: auto; }
+        .grid-especies { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .btn-esp { padding: 18px 10px; font-size: 0.95rem; border: 2px solid #eee; border-radius: 12px; background: #f9f9f9; font-weight: bold; color: var(--dark); }
+        .btn-esp:active { background: #e0e0e0; border-color: var(--primary); }
         
         /* Gerenciador */
-        .item-lista { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .btn-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; }
+        .item-lista { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .btn-del { background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 8px; }
+        input[type="text"] { width: calc(100% - 90px); padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h3 style="margin-top:0">Registro de Espécies</h3>
-        <div id="status-gps" style="color: #666; font-size: 0.8rem;">GPS: Aguardando sinal...</div>
-        <button class="btn-main" onclick="capturarEspecie()">REGISTRAR E MARCAR UTM</button>
+        <h2 style="margin: 0 0 15px 0; color: var(--primary);">Monitoramento</h2>
+        <div id="status-gps" class="status-gps">🟡 Aguardando GPS...</div>
+        <button class="btn-main" onclick="iniciarCaptura()">REGISTRAR<br>ESPÉCIE + UTM</button>
     </div>
 
-    <div class="card">
-        <button class="btn-util" style="background: var(--secondary);" onclick="exportarExcel()">EXPORTAR .XLSM DO DIA</button>
-        <button class="btn-util" onclick="abrirGerenciador()">CONFIGURAR ESPÉCIES</button>
-        <button class="btn-util" style="background: var(--danger);" onclick="limparDados()">LIMPAR TUDO</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button class="btn-util" style="background: var(--secondary); color: white;" onclick="exportarExcel()">📊 EXPORTAR</button>
+        <button class="btn-util" onclick="abrirGerenciador()">⚙️ ESPÉCIES</button>
     </div>
+    
+    <button class="btn-util" style="color: var(--danger); border-color: var(--danger); margin-top: 20px;" onclick="limparDados()">🗑️ LIMPAR REGISTROS</button>
 
     <div id="modalSelecao" class="modal">
         <div class="modal-content">
-            <h3 id="coords-preview" style="font-size: 0.9rem; color: var(--secondary)"></h3>
+            <h3 style="margin-top:0">Selecione a Espécie</h3>
+            <p id="coords-preview" style="font-family: monospace; font-size: 0.8rem; background: #eee; padding: 10px; border-radius: 5px;"></p>
             <div class="grid-especies" id="lista-botoes-especies"></div>
             <button class="btn-util" onclick="fecharModais()">Cancelar</button>
         </div>
@@ -48,120 +56,99 @@
 
     <div id="modalGerenciador" class="modal">
         <div class="modal-content">
-            <h3>Gerenciar Espécies</h3>
-            <input type="text" id="nova-especie" placeholder="Nome da espécie..." style="width:70%; padding:10px;">
-            <button onclick="addEspecie()" style="padding:10px;">Add</button>
-            <div id="lista-gerenciamento" style="margin-top:20px;"></div>
-            <button class="btn-util" onclick="fecharModais()">Fechar</button>
+            <h3>Configurar Lista</h3>
+            <div style="display:flex; gap:5px; margin-bottom:20px;">
+                <input type="text" id="nova-especie" placeholder="Nome da espécie">
+                <button onclick="addEspecie()" style="background: var(--primary); color:white; border:none; border-radius:8px; padding:0 15px;">ADD</button>
+            </div>
+            <div id="lista-gerenciamento"></div>
+            <button class="btn-util" onclick="fecharModais()" style="margin-top:20px;">Fechar</button>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('registros_v2')) || [];
-        let especies = JSON.parse(localStorage.getItem('especies_v2')) || ["Angico Vermelho", "Aroeira Preta", "Braúna", "Ipê Amarelo", "Ipê Roxo", "Umbuzeiro"];
-        let tempCoords = { lat: 0, lon: 0, utmE: 0, utmN: 0, zona: "" };
+        let db = JSON.parse(localStorage.getItem('registros_v3')) || [];
+        let especies = JSON.parse(localStorage.getItem('especies_v3')) || ["Angico Vermelho", "Aroeira Preta", "Braúna", "Ipê Amarelo", "Ipê Roxo", "Umbuzeiro"];
+        let tempCoords = null;
 
-        // Registro do Service Worker
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
         function latLonToUTM(lat, lon) {
             const zone = Math.floor((lon + 180) / 6) + 1;
             const s = (lat < 0) ? 'S' : 'N';
-            
-            // Simplificação da Projeção Transversa de Mercator (Precisão p/ campo)
-            const sa = 6378137.000000; const sb = 6356752.314245;
-            const e2 = Math.sqrt((Math.pow(sa, 2) - Math.pow(sb, 2)) / Math.pow(sb, 2));
-            const e = e2 * e2;
-            const lon0 = ((zone - 1) * 6 - 180 + 3);
+            const sa = 6378137.0; const sb = 6356752.314245;
+            const e2 = (Math.pow(sa, 2) - Math.pow(sb, 2)) / Math.pow(sa, 2);
+            const e2p = (Math.pow(sa, 2) - Math.pow(sb, 2)) / Math.pow(sb, 2);
             const latRad = lat * Math.PI / 180;
-            const lonRad = (lon - lon0) * Math.PI / 180;
+            const lon0 = ((zone - 1) * 6 - 180 + 3) * Math.PI / 180;
+            const lonRad = lon * Math.PI / 180;
             
             const k0 = 0.9996;
-            const N = sa / Math.sqrt(1 - e * Math.pow(Math.sin(latRad), 2));
+            const N = sa / Math.sqrt(1 - e2 * Math.pow(Math.sin(latRad), 2));
             const T = Math.pow(Math.tan(latRad), 2);
-            const C = e * Math.pow(Math.cos(latRad), 2);
-            const A = lonRad * Math.cos(latRad);
-            const M = sa * ((1 - e/4 - 3*e*e/64 - 5*e*e*e/256) * latRad - (3*e/8 + 3*e*e/32 + 45*e*e*e/1024) * Math.sin(2*latRad) + (15*e*e/256 + 45*e*e*e/1024) * Math.sin(4*latRad) - (35*e*e*e/3072) * Math.sin(6*latRad));
+            const C = e2p * Math.pow(Math.cos(latRad), 2);
+            const A = (lonRad - lon0) * Math.cos(latRad);
+            const M = sa * ((1 - e2/4 - 3*e2*e2/64) * latRad - (3*e2/8 + 3*e2*e2/32) * Math.sin(2*latRad) + (15*e2*e2/256) * Math.sin(4*latRad));
 
-            const x = k0 * N * (A + (1 - T + C) * Math.pow(A, 3) / 6 + (5 - 18 * T + T * T + 72 * C - 58 * e2) * Math.pow(A, 5) / 120) + 500000.0;
-            let y = k0 * (M + N * Math.tan(latRad) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * Math.pow(A, 4) / 24 + (61 - 58 * T + T * T + 600 * C - 330 * e2) * Math.pow(A, 6) / 720));
+            const x = k0 * N * (A + (1 - T + C) * Math.pow(A, 3) / 6 + (5 - 18 * T + T * T) * Math.pow(A, 5) / 120) + 500000.0;
+            let y = k0 * (M + N * Math.tan(latRad) * (A * A / 2 + (5 - T + 9 * C) * Math.pow(A, 4) / 24 + (61 - 58 * T + T * T) * Math.pow(A, 6) / 720));
             if (y < 0) y += 10000000.0;
-
             return { east: x.toFixed(2), north: y.toFixed(2), zona: zone + s };
         }
 
-        function capturarEspecie() {
+        function iniciarCaptura() {
+            document.getElementById('status-gps').innerText = "🔵 Localizando...";
             navigator.geolocation.getCurrentPosition(pos => {
                 const utm = latLonToUTM(pos.coords.latitude, pos.coords.longitude);
                 tempCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude, ...utm };
-                
-                document.getElementById('coords-preview').innerText = `Zona: ${utm.zona} | E: ${utm.east} | N: ${utm.north}`;
-                renderizarBotoesSelecao();
+                document.getElementById('status-gps').innerText = "🟢 GPS OK";
+                document.getElementById('coords-preview').innerText = `UTM: ${utm.zona} | E: ${utm.east} | N: ${utm.north}`;
+                renderizarBotoes();
                 document.getElementById('modalSelecao').style.display = 'block';
-            }, err => alert("Ative o GPS!"), { enableHighAccuracy: true });
+            }, err => {
+                document.getElementById('status-gps').innerText = "🔴 Erro GPS";
+                alert("Ative a localização!");
+            }, { enableHighAccuracy: true });
         }
 
-        function renderizarBotoesSelecao() {
-            const container = document.getElementById('lista-botoes-especies');
-            container.innerHTML = especies.map(esp => `<button class="btn-esp" onclick="salvar('${esp}')">${esp}</button>`).join('');
+        function renderizarBotoes() {
+            const cont = document.getElementById('lista-botoes-especies');
+            cont.innerHTML = especies.map(e => `<button class="btn-esp" onclick="salvar('${e}')">${e}</button>`).join('');
         }
 
         function salvar(esp) {
-            db.push({ especie: esp, ...tempCoords, data: new Date().toLocaleString() });
-            localStorage.setItem('registros_v2', JSON.stringify(db));
+            db.push({ especie: esp, ...tempCoords, data: new Date().toLocaleString('pt-BR') });
+            localStorage.setItem('registros_v3', JSON.stringify(db));
             fecharModais();
-            alert(`Registrado: ${esp}`);
+            alert("Salvo!");
         }
 
-        // Funções do Gerenciador
         function abrirGerenciador() {
-            renderizarListaGerenciamento();
+            const cont = document.getElementById('lista-gerenciamento');
+            cont.innerHTML = especies.map((e, i) => `
+                <div class="item-lista"><span>${e}</span><button class="btn-del" onclick="removerEsp(${i})">Remover</button></div>
+            `).join('');
             document.getElementById('modalGerenciador').style.display = 'block';
         }
 
-        function renderizarListaGerenciamento() {
-            const container = document.getElementById('lista-gerenciamento');
-            container.innerHTML = especies.map((esp, i) => `
-                <div class="item-lista">
-                    <span>${esp}</span>
-                    <button class="btn-del" onclick="removerEspecie(${i})">X</button>
-                </div>
-            `).join('');
-        }
-
         function addEspecie() {
-            const nome = document.getElementById('nova-especie').value;
-            if(nome) {
-                especies.push(nome);
-                localStorage.setItem('especies_v2', JSON.stringify(especies));
-                document.getElementById('nova-especie').value = '';
-                renderizarListaGerenciamento();
-            }
+            const n = document.getElementById('nova-especie').value;
+            if(n) { especies.push(n); localStorage.setItem('especies_v3', JSON.stringify(especies)); abrirGerenciador(); document.getElementById('nova-especie').value=''; }
         }
 
-        function removerEspecie(index) {
-            especies.splice(index, 1);
-            localStorage.setItem('especies_v2', JSON.stringify(especies));
-            renderizarListaGerenciamento();
-        }
+        function removerEsp(i) { especies.splice(i, 1); localStorage.setItem('especies_v3', JSON.stringify(especies)); abrirGerenciador(); }
 
-        function fecharModais() { 
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-        }
+        function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
         function exportarExcel() {
-            if(db.length === 0) return alert("Vazio!");
+            if(db.length === 0) return alert("Sem dados");
             const ws = XLSX.utils.json_to_sheet(db);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Dados");
-            XLSX.writeFile(wb, `Ficha_Campo_${new Date().toISOString().slice(0,10)}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Campo");
+            XLSX.writeFile(wb, `Campo_UTM_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
-        function limparDados() {
-            if(confirm("Apagar todos os registros do dia?")) {
-                db = []; localStorage.setItem('registros_v2', "[]");
-            }
-        }
+        function limparDados() { if(confirm("Apagar TUDO?")) { db = []; localStorage.setItem('registros_v3', "[]"); location.reload(); } }
     </script>
 </body>
 </html>
