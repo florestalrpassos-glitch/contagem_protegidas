@@ -1,15 +1,16 @@
 {
-  "name": "Contador UTM Ambientare",
-  "short_name": "UTM Pro",
+  "name": "Contador UTM Pro",
+  "short_name": "Contador",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#2e7d32",
   "theme_color": "#2e7d32",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2913/2913520.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
